@@ -6,19 +6,17 @@ const port = process.env.PORT || 8080;
 // Create HTTP server
 const server = http.createServer((req, res) => {
     res.writeHead(200);
-    res.end("WebSocket server is running");
+    res.end("Server is running 🚀");
 });
 
-// Attach WebSocket to HTTP server
+// Attach WebSocket
 const wss = new WebSocket.Server({ server });
 
-wss.on('connection', (ws, req) => {
+wss.on('connection', (ws) => {
     console.log('Client connected');
 
     ws.on('message', (message) => {
         console.log('Received:', message.toString());
-
-        // Echo back
         ws.send(message.toString());
     });
 
@@ -27,7 +25,7 @@ wss.on('connection', (ws, req) => {
     });
 });
 
-// Start server
-server.listen(port, () => {
+// 🚨 VERY IMPORTANT: listen on Railway port
+server.listen(port, '0.0.0.0', () => {
     console.log(`Server running on port ${port}`);
 });
