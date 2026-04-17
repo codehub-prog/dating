@@ -1,33 +1,33 @@
+const http = require('http');
 const WebSocket = require('ws');
 
 const port = process.env.PORT || 8080;
 
-const wss = new WebSocket.Server({
-    host: '0.0.0.0',
-    port: port
+// Create HTTP server
+const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end("WebSocket server is running");
 });
 
-let clients = [];
+// Attach WebSocket to HTTP server
+const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws, req) => {
-    console.log('Client connected:', req.socket.remoteAddress);
-
-    clients.push(ws);
+    console.log('Client connected');
 
     ws.on('message', (message) => {
         console.log('Received:', message.toString());
 
-        // Broadcast
-        clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(message.toString());
-            }
-        });
+        // Echo back
+        ws.send(message.toString());
     });
 
     ws.on('close', () => {
-        clients = clients.filter(c => c !== ws);
+        console.log('Client disconnected');
     });
 });
 
-console.log(`Server running on port ${port}`);
+// Start server
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
